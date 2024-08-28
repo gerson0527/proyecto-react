@@ -1,23 +1,14 @@
-// server.js
 const express = require('express');
-const cors = require('cors');
 const app = express();
-const port = 5000; // Puedes elegir otro puerto
+const authRoutes = require('./routes/authRoutes');
 
-// Middleware
+const cors = require('cors');
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // Manejar JSON en las peticiones
 
-// Endpoint de autenticación
-app.post('/', (req, res) => {
-  const { username, password } = req.body;
-  if (username === "123" && password === "123") {
-    res.json({ success: true, message: 'Inicio de sesión exitoso!' });
-  } else {
-    res.status(401).json({ success: false, message: 'Credenciales incorrectas' });
-  }
-});
+// Definir las rutas
+app.use('/', authRoutes);
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+app.listen(5000, () => {
+  console.log('Server running on port 5000');
 });

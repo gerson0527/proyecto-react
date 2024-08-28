@@ -18,7 +18,7 @@ export default function Component() {
         },
         body: JSON.stringify({ username, password }),
       });
-
+      console.log('Response:', response);
       const data = await response.json();
 
       console.log(data);
@@ -29,7 +29,7 @@ export default function Component() {
         setAlert({ type: 'error', message: data.message, variant: 'outlined' });
       }
     } catch (error) {
-      setAlert({ type: 'error', message: 'Error de conexi�n', variant: 'outlined' });
+      setAlert({ type: 'error', message: 'Error de conexion', variant: 'outlined' });
     }
   };
 
