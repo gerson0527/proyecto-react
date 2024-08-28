@@ -23,9 +23,10 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
       const data = await response.json();
-      console.log(data);
 
       if (response.ok) {
+        const user = { username, token: data.token };
+        localStorage.setItem('user', JSON.stringify(user));
         setAlert({ type: 'success', message: data.message, variant: 'filled' });
         setTimeout(() => {
           navigate('/dashboard'); // Redireccionar a la página de dashboard
