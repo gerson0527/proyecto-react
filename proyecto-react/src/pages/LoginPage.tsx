@@ -1,17 +1,19 @@
-// src/pages/LoginPage.tsx
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Para redirección
 import Alert from '../components/Alert';
-import imganebag from '../assets/cool-background.png'
+import bagimg from '../assets/cool-background.png';
 import { TextField, Button, Container, Typography, Box, InputAdornment } from '@mui/material';
 import { AccountCircle, Lock } from '@mui/icons-material';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string; variant: 'filled' | 'outlined';  duration?: number; } | null>(null);
+  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string; variant: 'filled' | 'outlined' } | null>(null);
+  const navigate = useNavigate(); // Hook para redireccionar
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const response = await fetch('http://localhost:5000/', {
         method: 'POST',
@@ -20,18 +22,19 @@ export default function LoginPage() {
         },
         body: JSON.stringify({ username, password }),
       });
-
       const data = await response.json();
-
       console.log(data);
 
       if (response.ok) {
         setAlert({ type: 'success', message: data.message, variant: 'filled' });
+        setTimeout(() => {
+          navigate('/dashboard'); // Redireccionar a la página de dashboard
+        },3000);
       } else {
         setAlert({ type: 'error', message: data.message, variant: 'filled' });
       }
     } catch (error) {
-      setAlert({ type: 'error', message: 'Error de conexion', variant: 'filled' });
+      setAlert({ type: 'error', message: 'Error de conexión', variant: 'filled' });
     }
   };
 
@@ -40,7 +43,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Container component="main" maxWidth='100%' sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundImage: `url(${imganebag})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
+    <Container component="main" maxWidth='100%' sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh',backgroundImage: `url(${bagimg})`, backgroundSize: 'cover', backgroundPosition: 'center', }}> {/* Mostrar el loader mientras se carga */}
       <Box
         sx={{
           display: 'flex',
@@ -58,7 +61,7 @@ export default function LoginPage() {
           Login
         </Typography>
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-        {alert && <Alert duration={2000}  variant={alert.variant} type={alert.type} message={alert.message} onClose={handleCloseAlert}/>}
+          {alert && <Alert variant={alert.variant} type={alert.type} message={alert.message} onClose={handleCloseAlert} />}
           <TextField
             variant="outlined"
             margin="normal"
@@ -108,15 +111,15 @@ export default function LoginPage() {
             color="primary"
             sx={{ mt: 2, mb: 2 }}
           >
-            Iniciar Sesion
+            Iniciar Sesión
           </Button>
         </form>
-        <Box mt={2} textAlign="center" display="flex" justifyContent="space-between" width='100%'>
+        <Box mt={2} textAlign="center" display='flex' justifyContent='space-between' width='100%'>
           <a href="#" style={{ color: '#1976d2', textDecoration: 'none' }}>
             Olvidaste tu contraseña
           </a>
           <a href="/register" style={{ color: '#1976d2', textDecoration: 'none' }}>
-            Registrarte
+            Regístrate
           </a>
         </Box>
       </Box>

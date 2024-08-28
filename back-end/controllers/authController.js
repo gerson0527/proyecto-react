@@ -1,4 +1,7 @@
+
+require('dotenv').config();
 const connection = require('../config/db');
+const jwt = require('jsonwebtoken');
 
 exports.login = (req, res) => {
   const { username, password } = req.body;
@@ -20,9 +23,9 @@ exports.login = (req, res) => {
       if (password !== user.password) {
         return res.status(401).send({ message: 'Invalid password' });
       }
-
-      // If the password matches, generate a token or start a session
-      return res.status(200).send({ message: 'Login successful' });
+      const payload = { id: user.id, username: user.username, email: user.email }
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+      return res.status(200).send({ message: 'Login successful', token });
     } else {
       return res.status(401).send({ message: 'Invalid username or password' });
     }
