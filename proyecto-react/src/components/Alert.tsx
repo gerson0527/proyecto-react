@@ -1,79 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Snackbar, Alert as MuiAlert, LinearProgress, Box } from '@mui/material';
-import { AlertColor } from '@mui/material/Alert';
+import React, { useEffect } from 'react';
 
-interface CustomAlertProps {
-  type: AlertColor;
+interface AlertProps {
+  type: 'success' | 'error';
   message: string;
   variant: 'filled' | 'outlined';
-  onClose: () => void;
+  onClose: () => void; // Requerido para cerrar la alerta
   duration?: number;
 }
 
-const Alert: React.FC<CustomAlertProps> = ({ type, message, variant, onClose, duration = 4000 }) => {
-  const [open, setOpen] = useState(true);
-  const [progress, setProgress] = useState(100);
+const Alert: React.FC<AlertProps> = ({ type, message, variant, onClose, duration=3000 }) => {
+  const baseClasses = 'p-4 mb-4 text-sm rounded-lg display: flex items-center ';
+  const variantClasses = variant === 'filled'
+    ? type === 'success'
+      ? 'bg-green-500 text-white'
+      : 'bg-red-500 text-white'
+    : type === 'success'
+    ? 'border border-green-500 text-green-800'
+    : 'border border-red-500 text-red-800';
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((oldProgress) => {
-        if (oldProgress === 0) {
-          clearInterval(timer);
-          setOpen(false);
-          onClose();
-          return 0;
-        }
-        const diff = 100 / (duration / 100);
-        return Math.max(oldProgress - diff, 0);
-      });
-    }, 100);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, [onClose, duration]);
+    const timer = setTimeout(onClose, duration); // 3 segundos
+    return () => clearTimeout(timer); // Limpieza del temporizador
+  }, [onClose]);
 
   return (
-    <Snackbar
-      open={open}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-    >
-      <Box sx={{ 
-        width: '100%', 
-        maxWidth: 400, 
-        borderRadius: 1, 
-        overflow: 'hidden',
-        boxShadow: 3
-      }}>
-        <MuiAlert
-          elevation={0}
-          variant={variant}
-          severity={type}
-          sx={{
-            width: '100%',
-            borderRadius: 0,
-            '& .MuiAlert-icon': {
-              marginRight: 1,
-            }
-          }}
-        >
-          {message}
-        </MuiAlert>
-        <LinearProgress 
-          variant="determinate" 
-          value={progress} 
-          sx={{ 
-            height: 4,
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            '& .MuiLinearProgress-bar': {
-              backgroundColor: type === 'error' ? '#d32f2f' : 
-                               type === 'warning' ? '#ed6c02' : 
-                               type === 'info' ? '#0288d1' : '#2e7d32'
-            }
-          }}
-        />
-      </Box>
-    </Snackbar>
+    <div className={`${baseClasses} ${variantClasses}`} role="alert">
+      <span className="font-medium">
+      </span>
+      <p>{message}</p>
+    </div>
   );
 };
 
