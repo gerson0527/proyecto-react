@@ -29,4 +29,11 @@ router.get('/renda', (req, res) => {
     });
 });
 
+router.get('/renda/getRows', (req, res) => {
+    connection.query('SELECT * FROM renda', (error, results) => {
+        if (error) return res.status(500).json({ error: error.message });
+        res.json(results);
+    });
+});
+
 module.exports = router;

@@ -5,47 +5,48 @@ import PeopleIcon from '@mui/icons-material/People';
 import BusinessIcon from '@mui/icons-material/Business';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import Card from '../components/Card';
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { DataGrid } from '@mui/x-data-grid';
 
 
 const DashboardPage = () => {
-  const [selectionModel, setSelectionModel] = useState([]);
-
-  const handleSelectionModelChange = (newSelection) => {
-    setSelectionModel(newSelection);
-    
-    // Obtener información de las filas seleccionadas desde el backend
-    const ids = newSelection.join(',');
-    fetch(`/api/getRows?ids=${ids}`)
-      .then(response => response.json())
+  const [rows, setRows] = useState([]);
+  const [columns, setColumns] = useState([]);
+  useEffect(() => {
+  fetch('http://localhost:5000/api/renda/getRows')
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(text => { // Obtener la respuesta en texto
+            throw new Error(`HTTP error! Status: ${response.status}, ${text}`);
+          });
+        }
+        return response.json(); // Procesar la respuesta como JSON si está bien
+      })
       .then(data => {
-        console.log("Selected Rows Data from Backend:", data);
+        setRows(data);
+
+        if (data.length > 0) {
+          const columnNames = Object.keys(data[0]);
+          const cols = columnNames.map(name => ({
+            field: name,
+            headerName: name.charAt(0).toUpperCase() + name.slice(1),
+            width: 150
+          }));
+          setColumns(cols);
+        }
       })
       .catch(error => {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       });
-  };
-  const rows = [
-    { id: 1, name: 'John Doe', age: 30 },
-    { id: 2, name: 'Jane Smith', age: 25 },
-    // Agrega más filas aquí
-  ];
-
-  const columns = [
-    { field: 'id', headerName: 'ID', width: 90 },
-    { field: 'name', headerName: 'Name', width: 150 },
-    { field: 'age', headerName: 'Age', width: 110 },
-    // Agrega más columnas aquí
-  ];
+  }, []);
   return (
     <div style={{ display: 'flex' }}>
       <Sidebar />
       <div style={{ flexGrow: 1 }}>
         <Navbar />
-        <div style={{ padding: '20px' }}>
+        <div style={{ padding: '20px', height:'92.2%', }}>
           <h1>Panel</h1>
-          <div style={{ marginTop: '20px',  display : 'flex', gap: '15px', justifyContent: 'space-between',  height: '200px'}}>
+          <div style={{ marginTop: '20px',  display : 'flex', gap: '15px', justifyContent: 'space-between',  height: '20%'}}>
             <Card 
                 title="Estudiantes" 
                 icon={PeopleIcon}
@@ -67,7 +68,7 @@ const DashboardPage = () => {
               fetchUrl="http://localhost:5000/api/renda" 
             />
           </div>
-          <div style={{ marginTop: '20px',  display : 'flex', gap: '15px', justifyContent: 'space-between',width:'100%'}}>
+          <div style={{ marginTop: '20px',  display : 'flex', gap: '15px', justifyContent: 'space-between',width:'100%' , height:'70%'}}>
             <div className="datagrid1" style={{width:'60%'}}>
               <DataGrid
                   rows={rows}
@@ -75,8 +76,6 @@ const DashboardPage = () => {
                   pageSize={5}
                   checkboxSelection
                   disableSelectionOnClick
-                  selectionModel={selectionModel}
-                  onSelectionModelChange={handleSelectionModelChange}
                 />
 
             </div>
@@ -87,8 +86,6 @@ const DashboardPage = () => {
                 pageSize={5}
                 checkboxSelection
                 disableSelectionOnClick
-                selectionModel={selectionModel}
-                onSelectionModelChange={handleSelectionModelChange}
               />
             </div>
           </div>
