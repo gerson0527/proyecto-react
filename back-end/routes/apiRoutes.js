@@ -25,7 +25,7 @@ router.get('/schools', (req, res) => {
 router.get('/renda', (req, res) => {
     connection.query('SELECT SUM(TOTAL) AS total FROM renda', (error, results) => {
         if (error) return res.status(500).json({ error: error.message });
-        res.json(results[0].total);
+        res.json( parseFloat(results[0].total));
     });
 });
 

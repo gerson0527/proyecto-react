@@ -56,7 +56,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center', // Centra los elementos verticalmente
-    height: '150px',
+    height: '130px',
   },
   iconContainer: {
     marginBottom: '10px',
@@ -74,7 +74,8 @@ const styles = {
     textAlign: 'left',
     whiteSpace: 'pre-wrap',
     fontSize: '1em',
-    colors: '#E4E4E5',
+    marginTop: '8px' ,
+    opacity: 0.7,
   },
 };
 
