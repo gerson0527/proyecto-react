@@ -1,6 +1,9 @@
 import Navbar from "../components/Navbar"
 import Sidebar from '../components/Sidebar';
-import { FaUser, FaBook, FaSchool,FaMoneyBillWave  } from 'react-icons/fa';
+import SchoolIcon from '@mui/icons-material/School';
+import PeopleIcon from '@mui/icons-material/People';
+import BusinessIcon from '@mui/icons-material/Business';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import Card from '../components/Card';
 
 
@@ -15,23 +18,23 @@ const DashboardPage = () => {
           <div style={{ marginTop: '20px',  display : 'flex', gap: '15px', justifyContent: 'space-between'}}>
           <Card 
               title="Estudiantes" 
-              icon={FaUser} 
+              icon={PeopleIcon}
               fetchUrl="http://localhost:5000/api/students"  
             />
             <Card 
               title="Profesores" 
-              icon={FaBook} 
+              icon={BusinessIcon}
               fetchUrl="http://localhost:5000/api/teachers" 
             />
             <Card 
               title="Escuelas" 
-              icon={FaSchool} 
+              icon={SchoolIcon} 
               fetchUrl="http://localhost:5000/api/schools" 
             />
             <Card 
               title="Renta" 
-              icon={FaMoneyBillWave} 
-              fetchUrl="http://localhost:5000/api/schools" 
+              icon={AttachMoneyIcon} 
+              fetchUrl="http://localhost:5000/api/renda" 
             />
           </div>
         </div>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { IconContext } from 'react-icons';
+import { Margin, Opacity } from '@mui/icons-material';
+import { colors } from '@mui/material';
 
 // Componente de Card con fetch
 const Card = ({ title, icon: Icon, fetchUrl }) => {
@@ -29,15 +31,15 @@ const Card = ({ title, icon: Icon, fetchUrl }) => {
 
   return (
     <div style={styles.card}>
-      <IconContext.Provider value={{ size: '2em', color: 'white' }}>
-        <div style={styles.iconContainer}>
-          <Icon />
-        </div>
-      </IconContext.Provider>
-      <h2 style={styles.title}>{title}</h2>
-      {loading && <p>Loading...</p>}
-      {error && <p style={styles.error}>{error.message}</p>}
-      {data && <pre style={styles.data}>{JSON.stringify(data, null, 2)}</pre>}
+      <div>
+        <h2 style={styles.title}>{title}</h2>
+        {loading && <p>Loading...</p>}
+        {error && <p style={styles.error}>{error.message}</p>}
+        {data && <pre style={styles.data}>{JSON.stringify(data, null, 2)}</pre>}
+      </div>
+      <div style={styles.iconContainer}>
+        <Icon style={{ fontSize: '2em', color: 'white' }} />
+      </div>
     </div>
   );
 };
@@ -46,26 +48,33 @@ const Card = ({ title, icon: Icon, fetchUrl }) => {
 const styles = {
   card: {
     borderRadius: '8px',
-    background: '#333',
+    background: '#EA3C53',
     color: '#fff',
     padding: '20px',
-    textAlign: 'center',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
     width: '300px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center', // Centra los elementos verticalmente
+    height: '150px',
   },
   iconContainer: {
     marginBottom: '10px',
+    fontSize: '1.8em',
   },
   title: {
     margin: 0,
-    fontSize: '1.2em',
+    fontSize: '1.5em',
+    textAlign: 'left',    
   },
   error: {
-    color: 'red',
+    color: 'white',
   },
   data: {
     textAlign: 'left',
     whiteSpace: 'pre-wrap',
+    fontSize: '1em',
+    colors: '#E4E4E5',
   },
 };
 
