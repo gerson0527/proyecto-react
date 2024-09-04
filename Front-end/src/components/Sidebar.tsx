@@ -19,58 +19,58 @@ const Sidebar = () => {
     <Box
       sx={{
         width: 250,
-        backgroundColor: '#1976d2',
+        backgroundColor: '#EA3C53',
         height: '100vh',
         color: 'white',
         padding: 2,
       }}
     >
-      <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 'bold' }}>
+      <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 'bold', textAlign: 'left'}}>
         MARCA
       </Typography>
-      <Divider sx={{ borderColor: 'white', marginBottom: 2 }} />
+      <Divider sx={{ borderColor: 'white', marginBottom: 5 }} />
       <List>
-        <ListItem button>
+        <ListItem button sx={{ marginBottom: 4 }}>
           <ListItemIcon>
             <DashboardIcon sx={{ color: 'white' }} />
           </ListItemIcon>
           <ListItemText primary="Panel" />
         </ListItem>
-        <ListItem button>
+        <ListItem button sx={{ marginBottom: 4 }}>
           <ListItemIcon>
             <PeopleIcon sx={{ color: 'white' }} />
           </ListItemIcon>
-          <ListItemText primary="Students" />
+          <ListItemText primary="Alumnos" />
         </ListItem>
-        <ListItem button>
+        <ListItem button sx={{ marginBottom: 4 }}>
           <ListItemIcon>
             <SchoolIcon sx={{ color: 'white' }} />
           </ListItemIcon>
-          <ListItemText primary="Professors" />
+          <ListItemText primary="Profesores" />
         </ListItem>
-        <ListItem button>
+        <ListItem button sx={{ marginBottom: 4 }}>
           <ListItemIcon>
             <BusinessIcon sx={{ color: 'white' }} />
           </ListItemIcon>
-          <ListItemText primary="Schools" />
+          <ListItemText primary="Escuelas" />
         </ListItem>
-        <ListItem button>
+        <ListItem button sx={{ marginBottom: 4 }}>
           <ListItemIcon>
             <AttachMoneyIcon sx={{ color: 'white' }} />
           </ListItemIcon>
-          <ListItemText primary="Renda" />
+          <ListItemText primary="Renta" />
         </ListItem>
-        <ListItem button>
+        <ListItem button sx={{ marginBottom: 4 }}>
           <ListItemIcon>
             <HelpIcon sx={{ color: 'white' }} />
           </ListItemIcon>
-          <ListItemText primary="Help" />
+          <ListItemText primary="Ayuda" />
         </ListItem>
-        <ListItem button>
+        <ListItem button sx={{ marginBottom: 4 }}>
           <ListItemIcon>
             <SettingsIcon sx={{ color: 'white' }} />
           </ListItemIcon>
-          <ListItemText primary="Configurations" />
+          <ListItemText primary="Configuraciones" />
         </ListItem>
       </List>
     </Box>
