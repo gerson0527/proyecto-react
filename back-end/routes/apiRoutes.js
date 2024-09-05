@@ -30,7 +30,14 @@ router.get('/renda', (req, res) => {
 });
 
 router.get('/renda/getRows', (req, res) => {
-    connection.query('SELECT * FROM renda', (error, results) => {
+    connection.query('SELECT es.nome, r.total FROM `renda` r LEFT join escolas es ON es.id = r.escola_id', (error, results) => {
+        if (error) return res.status(500).json({ error: error.message });
+        res.json(results);
+    });
+});
+
+router.get('/students/getNews', (req, res) => {
+    connection.query('SELECT nome, email FROM Alunos WHERE data_criacao >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH);', (error, results) => {
         if (error) return res.status(500).json({ error: error.message });
         res.json(results);
     });
