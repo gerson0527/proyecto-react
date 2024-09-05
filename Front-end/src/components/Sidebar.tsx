@@ -1,4 +1,3 @@
-import React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -13,8 +12,17 @@ import HelpIcon from '@mui/icons-material/Help';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import  { useState, useEffect } from 'react';
 
 const Sidebar = () => {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+      console.log(userData);
+    }
+  }, []);
   return (
     <Box
       sx={{
@@ -26,47 +34,47 @@ const Sidebar = () => {
       }}
     >
       <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 'bold', textAlign: 'left'}}>
-        MARCA
+        {user.username  }
       </Typography>
       <Divider sx={{ borderColor: 'white', marginBottom: 5 }} />
       <List>
-        <ListItem button sx={{ marginBottom: 4 }}>
+        <ListItem button sx={{ marginBottom: 4, cursor:'pointer'}}>
           <ListItemIcon>
             <DashboardIcon sx={{ color: 'white' }} />
           </ListItemIcon>
           <ListItemText primary="Panel" />
         </ListItem>
-        <ListItem button sx={{ marginBottom: 4 }}>
+        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
           <ListItemIcon>
             <PeopleIcon sx={{ color: 'white' }} />
           </ListItemIcon>
           <ListItemText primary="Alumnos" />
         </ListItem>
-        <ListItem button sx={{ marginBottom: 4 }}>
+        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
           <ListItemIcon>
             <SchoolIcon sx={{ color: 'white' }} />
           </ListItemIcon>
           <ListItemText primary="Profesores" />
         </ListItem>
-        <ListItem button sx={{ marginBottom: 4 }}>
+        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
           <ListItemIcon>
             <BusinessIcon sx={{ color: 'white' }} />
           </ListItemIcon>
           <ListItemText primary="Escuelas" />
         </ListItem>
-        <ListItem button sx={{ marginBottom: 4 }}>
+        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
           <ListItemIcon>
             <AttachMoneyIcon sx={{ color: 'white' }} />
           </ListItemIcon>
           <ListItemText primary="Renta" />
         </ListItem>
-        <ListItem button sx={{ marginBottom: 4 }}>
+        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
           <ListItemIcon>
             <HelpIcon sx={{ color: 'white' }} />
           </ListItemIcon>
           <ListItemText primary="Ayuda" />
         </ListItem>
-        <ListItem button sx={{ marginBottom: 4 }}>
+        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
           <ListItemIcon>
             <SettingsIcon sx={{ color: 'white' }} />
           </ListItemIcon>

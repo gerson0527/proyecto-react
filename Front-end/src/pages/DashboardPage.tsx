@@ -7,10 +7,16 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import Card from '../components/Card';
 import TableDashboard from "../components/Table/TableDashboard";
 import TableDashboardStudens from "../components/Table/TableDashboardStudens";
-
+import  { useState, useEffect } from 'react';
 
 const DashboardPage = () => {
- 
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
   return (
     <div style={{ display: 'flex' }}>
       <Sidebar />
