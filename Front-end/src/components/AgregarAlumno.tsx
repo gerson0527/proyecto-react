@@ -52,18 +52,27 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
     });
   };
 
+  const [user, setUser] = useState({ username: 'guest', token: '' });
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+  let token = user.token;
   // Función para hacer la petición al servidor
   const handleSave = async () => {
     try {
       let response;
-
+      console.log('mode', mode);
       if (mode === 'add') {
         // Petición POST para agregar un alumno
-        console.log('Alumno a guardar:', alumnoData); 
         response = await fetch('http://localhost:5000/alumnos', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Incluye el token en los headers
           },
           body: JSON.stringify(alumnoData),
         });

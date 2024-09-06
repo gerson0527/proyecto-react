@@ -8,7 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const apiRoutes = require('./routes/apiRoutes');
 
 // Configuración middleware
-app.use(cors());
+app.use(cors({ origin:'http://localhost:5173',methods: ['GET', 'POST', 'PUT', 'DELETE']})); // Habilitar CORS
 app.use(bodyParser.json()); // Manejar JSON en las peticiones
 app.use(express.json());
 

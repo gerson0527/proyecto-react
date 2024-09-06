@@ -8,7 +8,7 @@ const addAlumno = (req, res) => {
       return res.status(400).json({ error: 'All fields are required' });
     }
   
-    const query = 'INSERT INTO alumnos (nombre, telefono, direccion, correo, colegio) VALUES (?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO alunos (nome, email, endereco, telefone, escola_id) VALUES (?, ?, ?, ?, ?)';
     console.log(query);
     connection.query(query, [nombre, telefono, direccion, correo, colegio], (err, results) => {
       if (err) {
@@ -23,7 +23,7 @@ const addAlumno = (req, res) => {
   const deleteAlumno = (req, res) => {
     const { id } = req.params;
   
-    const query = 'DELETE FROM alumnos WHERE id = ?';
+    const query = 'DELETE FROM alunos WHERE id = ?';
   
     connection.query(query, [id], (err, results) => {
       if (err) {
