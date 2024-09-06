@@ -1,114 +1,73 @@
-import * as React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import Sidebar from '../components/Sidebar';
 import Navbar from "../components/Navbar";
+import AgregarAlumno from '../components/AgregarAlumno';
+import TableAlumnoPage from '../components/Table/TableAlumnoPage'; // Asegúrate de importar tu componente de tabla
+import { useState } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import Button from '@mui/material/Button';
 
-const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 90 },
-  { field: 'nombre', headerName: 'Nombre', width: 150 },
-  { field: 'edad', headerName: 'Edad', width: 130 },
-  { field: 'grado', headerName: 'Grado', width: 130 },
-  {
-    field: 'actions',
-    headerName: 'Opciones',
-    width: 250,
-    renderCell: (params) => (
-      <Box sx={{ display: 'flex', gap: 1 }}>
-        <Button
-          variant="outlined"
-          startIcon={<VisibilityIcon />}
-          onClick={() => handleViewAlumno(params.row.id)}
-          size="small"
-        >
-          Ver
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<EditIcon />}
-          onClick={() => handleEditAlumno(params.row.id)}
-          size="small"
-        >
-          Editar
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<DeleteIcon />}
-          onClick={() => handleDeleteAlumno(params.row.id)}
-          size="small"
-        >
-          Eliminar
-        </Button>
-      </Box>
-    ),
-  },
-];
 
-const rows = [
-  { id: 1, nombre: 'Juan PÃ©rez', edad: 15, grado: '10Â°' },
-  { id: 2, nombre: 'MarÃ­a LÃ³pez', edad: 16, grado: '11Â°' },
-  { id: 3, nombre: 'Pedro GÃ³mez', edad: 14, grado: '9Â°' },
-  { id: 4, nombre: 'Ana MartÃ­nez', edad: 15, grado: '10Â°' },
-];
+// Definir la interfaz del Alumno
+interface Alumno {
+  id?: number;
+  nombre: string;
+  edad: number;
+  grado: string;
+}
 
-const handleAddAlumno = () => {
-  console.log('Agregar alumno');
-};
-
-const handleEditAlumno = (id) => {
-  console.log('Editar alumno', id);
-};
-
-const handleDeleteAlumno = (id) => {
-  console.log('Eliminar alumno', id);
-};
-
-const handleViewAlumno = (id) => {
-  console.log('Ver alumno', id);
-};
-
+// Página de alumnos
 const AlumnosPage = () => {
+  const [openAgregarAlumno, setOpenAgregarAlumno] = useState(false);
+  const [alumno, setAlumno] = useState<Alumno | null>(null); // Alumno actual para editar/ver
+  const [mode, setMode] = useState<'add' | 'edit' | 'view'>('add'); // Modo del modal
+
+  // Función para abrir el modal en modo "Agregar"
+  const handleOpenAgregarAlumno = () => {
+    setAlumno(null); // Limpia el alumno actual (para agregar uno nuevo)
+    setMode('add');
+    setOpenAgregarAlumno(true);
+  };
+
+  // Función para manejar el cierre del modal
+  const handleCloseModal = () => {
+    setOpenAgregarAlumno(false);
+  };
+
+  // Función para manejar cuando se guarda un alumno (en agregar o editar)
+  const handleSaveAlumno = (nuevoAlumno: Alumno) => {
+    console.log('Alumno guardado:', nuevoAlumno);
+    setOpenAgregarAlumno(false); // Cierra el modal después de guardar
+    // Aquí podrías actualizar tu lista de alumnos si estuviera guardada en un estado o backend
+  };
+
   return (
-    <div style={{ display: 'flex' }}>
+    <div style={{ display: 'flex', height: '100vh' }}>
       <Sidebar />
       <div style={{ flexGrow: 1 }}>
         <Navbar />
-        <Box
-          sx={{
-            padding: 3,
-            margin: '0 auto',
-            maxWidth: 1200,
-          }}
-        >
-          <Typography variant="h4" gutterBottom>
-            Panel de Alumnos
-          </Typography>
-          <Button
+        <div style={{ marginTop: '20px', padding: '20px' }}>
+          <h1>Panel Alumnos</h1>
+          <Button style={{marginTop :'30px'}}
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={handleAddAlumno}
+            onClick={handleOpenAgregarAlumno}
             sx={{ mb: 2, backgroundColor: '#e63946', color: 'white' }}
           >
             Agregar Alumno
           </Button>
-          <Paper sx={{ height: 400, width: '100%' }}>
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              pageSize={5}
-              rowsPerPageOptions={[5, 10]}
-              checkboxSelection
-              sx={{ border: 0 }}
+
+          <div className="table" style={{  width: '100%' }}>
+            <AgregarAlumno
+              open={openAgregarAlumno} // Controla si el modal está abierto
+              onClose={handleCloseModal} // Función para cerrar el modal
+              onSave={handleSaveAlumno} // Función que se llama cuando se guarda el alumno
+              alumno={alumno} // Alumno actual si es para editar o visualizar
+              mode={mode} // Modo del modal: agregar, editar o ver
             />
-          </Paper>
-        </Box>
+            <TableAlumnoPage
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

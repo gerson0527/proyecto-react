@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const connection = require('../config/db'); // Asegúrate de tener una conexión a tu base de datos aquí
+const connection = require('../config/db'); // Asegï¿½rate de tener una conexiï¿½n a tu base de datos aquï¿½
 
 router.get('/students', (req, res) => {
     connection.query('SELECT COUNT(*) AS total FROM alunos', (error, results) => {
@@ -38,6 +38,14 @@ router.get('/renda/getRows', (req, res) => {
 
 router.get('/students/getNews', (req, res) => {
     connection.query('SELECT nome, email FROM Alunos WHERE data_criacao >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH);', (error, results) => {
+        if (error) return res.status(500).json({ error: error.message });
+        res.json(results);
+    });
+});
+
+
+router.get('/alumnos/getRows', (req, res) => {
+    connection.query('SELECT aln.id,aln.nome as nombre ,aln.telefone as telefono ,aln.email as correo,aln.endereco as direccion ,es.nome as colegio FROM `alunos` aln left join escolas es ON es.id = aln.escola_id order by aln.id DESC;', (error, results) => {
         if (error) return res.status(500).json({ error: error.message });
         res.json(results);
     });
