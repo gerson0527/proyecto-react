@@ -82,6 +82,7 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Incluye el token en los headers
           },
           body: JSON.stringify(alumnoData),
         });
