@@ -1,8 +1,5 @@
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
+import React, { useState, useEffect } from 'react';
+import { Box, Divider, Typography, List } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SchoolIcon from '@mui/icons-material/School';
 import PeopleIcon from '@mui/icons-material/People';
@@ -10,19 +7,18 @@ import BusinessIcon from '@mui/icons-material/Business';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import HelpIcon from '@mui/icons-material/Help';
 import SettingsIcon from '@mui/icons-material/Settings';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import  { useState, useEffect } from 'react';
+import NavigationListItem from './NavigationListItem';
 
 const Sidebar = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({ username: 'guest', token: '' });
+
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {
       setUser(JSON.parse(userData));
-      console.log(userData);
     }
   }, []);
+
   return (
     <Box
       sx={{
@@ -33,53 +29,18 @@ const Sidebar = () => {
         padding: 2,
       }}
     >
-      <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 'bold', textAlign: 'left'}}>
-        {user.username  }
+      <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 'bold', textAlign: 'left' }}>
+        <p>{user.username}</p>
       </Typography>
       <Divider sx={{ borderColor: 'white', marginBottom: 5 }} />
       <List>
-        <ListItem button sx={{ marginBottom: 4, cursor:'pointer'}}>
-          <ListItemIcon>
-            <DashboardIcon sx={{ color: 'white' }} />
-          </ListItemIcon>
-          <ListItemText primary="Panel" />
-        </ListItem>
-        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
-          <ListItemIcon>
-            <PeopleIcon sx={{ color: 'white' }} />
-          </ListItemIcon>
-          <ListItemText primary="Alumnos" />
-        </ListItem>
-        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
-          <ListItemIcon>
-            <SchoolIcon sx={{ color: 'white' }} />
-          </ListItemIcon>
-          <ListItemText primary="Profesores" />
-        </ListItem>
-        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
-          <ListItemIcon>
-            <BusinessIcon sx={{ color: 'white' }} />
-          </ListItemIcon>
-          <ListItemText primary="Escuelas" />
-        </ListItem>
-        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
-          <ListItemIcon>
-            <AttachMoneyIcon sx={{ color: 'white' }} />
-          </ListItemIcon>
-          <ListItemText primary="Renta" />
-        </ListItem>
-        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
-          <ListItemIcon>
-            <HelpIcon sx={{ color: 'white' }} />
-          </ListItemIcon>
-          <ListItemText primary="Ayuda" />
-        </ListItem>
-        <ListItem button sx={{ marginBottom: 4, cursor:'pointer' }}>
-          <ListItemIcon>
-            <SettingsIcon sx={{ color: 'white' }} />
-          </ListItemIcon>
-          <ListItemText primary="Configuraciones" />
-        </ListItem>
+        <NavigationListItem icon={DashboardIcon} text="Panel" route="/dashboard" />
+        <NavigationListItem icon={PeopleIcon} text="Alumnos" route="/alumnos" />
+        <NavigationListItem icon={SchoolIcon} text="Profesores" route="/professores" />
+        <NavigationListItem icon={BusinessIcon} text="Escuelas" route="/escuelas" />
+        <NavigationListItem icon={AttachMoneyIcon} text="Renta" route="/renta" />
+        <NavigationListItem icon={HelpIcon} text="Ayuda" route="/ayuda" />
+        <NavigationListItem icon={SettingsIcon} text="Configuraciones" route="/configuraciones" />
       </List>
     </Box>
   );

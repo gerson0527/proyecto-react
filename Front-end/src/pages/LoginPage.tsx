@@ -30,7 +30,7 @@ export default function LoginPage() {
         setAlert({ type: 'success', message: data.message, variant: 'filled' });
         setTimeout(() => {
           navigate('/dashboard'); // Redireccionar a la página de dashboard
-        },3000);
+        },1000);
       } else {
         setAlert({ type: 'error', message: data.message, variant: 'filled' });
       }
@@ -44,7 +44,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Container component="main" maxWidth='100%' sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh',backgroundImage: `url(${bagimg})`, backgroundSize: 'cover', backgroundPosition: 'center', }}> {/* Mostrar el loader mientras se carga */}
+    <Container component="main" maxWidth="100%"  sx={{width:'100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh',backgroundImage: `url(${bagimg})`, backgroundSize: 'cover', backgroundPosition: 'center', }}>
       <Box
         sx={{
           display: 'flex',

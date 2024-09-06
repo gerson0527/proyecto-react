@@ -11,6 +11,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import { styled, alpha } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -55,12 +56,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
+  const handSesion = () => {
+    localStorage.removeItem('token')
+    navigate('/',{replace : true});
+  }
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -105,6 +110,7 @@ export default function Navbar() {
         >
           <MenuItem onClick={handleClose}>Profile</MenuItem>
           <MenuItem onClick={handleClose}>My account</MenuItem>
+          <MenuItem onClick={handSesion}>log out</MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>
