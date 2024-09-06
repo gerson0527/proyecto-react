@@ -40,6 +40,7 @@ const AlumnosPage = () => {
     // Aquí podrías actualizar tu lista de alumnos si estuviera guardada en un estado o backend
   };
 
+
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       <Sidebar />

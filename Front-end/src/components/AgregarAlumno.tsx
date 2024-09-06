@@ -59,7 +59,8 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
 
       if (mode === 'add') {
         // Petición POST para agregar un alumno
-        response = await fetch('/api/alumnos', {
+        console.log('Alumno a guardar:', alumnoData); 
+        response = await fetch('http://localhost:5000/alumnos', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
         });
       } else if (mode === 'edit' && alumno?.id) {
         // Petición PUT para editar un alumno existente
-        response = await fetch(`/api/alumnos/${alumno.id}`, {
+        response = await fetch(`http://localhost:5000/alumnos/${alumno.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
           body: JSON.stringify(alumnoData),
         });
       }
-
+      console.log('Respuesta:', response);
       if (response?.ok) {
         const data = await response.json();
         console.log('Alumno guardado con éxito', data);
