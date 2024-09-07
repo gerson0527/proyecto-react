@@ -13,20 +13,24 @@ interface Alumno {
   telefono: string;
   direccion: string;
   correo: string;
-  colegio: string;
+  colegio: number;
   edad: number;
   grado: string;
 }
-
+interface Colegio {
+  id: number;
+  nome: string;  // Cambiado de 'nombre' a 'nome'
+  endereco: string;
+  telefone: string;
+  data_criacao: string;
+}
 interface AgregarAlumnoProps {
   open: boolean;
   onClose: () => void;
   onSave: (alumno: Alumno) => void;
-  alumno?: Alumno; // Si pasas un alumno, es para editar o visualizar
-  mode: 'add' | 'edit' | 'view'; // Modo de operación
+  alumno?: Alumno;
+  mode: 'add' | 'edit' | 'view';
 }
-
-const colegios = ['Colegio Nacional', 'Instituto Moderno', 'Escuela Internacional']; // Opciones de autocompletar
 
 const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, alumno, mode }) => {
   const [alumnoData, setAlumnoData] = useState<Alumno>({
@@ -34,16 +38,43 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
     telefono: '',
     direccion: '',
     correo: '',
-    colegio: '',
+    colegio: 0,
     edad: 0,
     grado: '',
   });
 
+  const [user, setUser] = useState({ username: 'guest', token: '' });
+  const [colegios, setColegios] = useState<Colegio[]>([]);
+  const [colegioSeleccionado, setColegioSeleccionado] = useState<Colegio | null>(null);
+
   useEffect(() => {
     if (alumno) {
       setAlumnoData(alumno);
+      const colegioEncontrado = colegios.find(c => c.nombre === alumno.colegio);
+      setColegioSeleccionado(colegioEncontrado || null);
     }
-  }, [alumno]);
+  }, [alumno, colegios]);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchColegios = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/escolas/getRows');
+        const data = await response.json();
+        setColegios(data);
+      } catch (error) {
+        console.error('Error fetching colegios:', error);
+      }
+    };
+
+    fetchColegios();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAlumnoData({
@@ -52,47 +83,50 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
     });
   };
 
-  const [user, setUser] = useState({ username: 'guest', token: '' });
+  const handleColegioChange = (event: React.SyntheticEvent, value: Colegio | null) => {
+    setColegioSeleccionado(value);
+    setAlumnoData({
+      ...alumnoData,
+      colegio: value ? value.id : 0,
+    });
+  };
 
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
-  let token = user.token;
-  // Función para hacer la petición al servidor
   const handleSave = async () => {
+    if (!user.token) {
+      console.error('No hay token de autenticación');
+      return;
+    }
+    if( !alumnoData.nombre || !alumnoData.telefono || !alumnoData.direccion || !alumnoData.correo || !alumnoData.colegio || !alumnoData.edad || !alumnoData.grado) {
+      alert('Por favor, rellene todos los campos');
+    }
     try {
       let response;
-      console.log('mode', mode);
+      const token = user.token;
+      console.log('alumnoData:', alumnoData);
       if (mode === 'add') {
-        // Petición POST para agregar un alumno
         response = await fetch('http://localhost:5000/alumnos', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // Incluye el token en los headers
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(alumnoData),
         });
       } else if (mode === 'edit' && alumno?.id) {
-        // Petición PUT para editar un alumno existente
         response = await fetch(`http://localhost:5000/alumnos/${alumno.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // Incluye el token en los headers
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(alumnoData),
         });
       }
-      console.log('Respuesta:', response);
       if (response?.ok) {
         const data = await response.json();
         console.log('Alumno guardado con éxito', data);
-        onSave(alumnoData); // Llama a la función de guardado externa
-        onClose(); // Cierra el diálogo
+        onSave(alumnoData);
+        onClose();
       } else {
         console.error('Error al guardar el alumno');
       }
@@ -101,6 +135,7 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
     }
   };
 
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
@@ -108,8 +143,8 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
       </DialogTitle>
       <form
         onSubmit={(e) => {
-          e.preventDefault(); // Evita el comportamiento predeterminado del formulario
-          handleSave(); // Llama la función de guardado
+          e.preventDefault();
+          handleSave(); 
         }}
       >
         <DialogContent>
@@ -192,16 +227,14 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
 
             {/* Colegio y Edad */}
             <Grid item xs={12} sm={6}>
-              <Autocomplete
+            <Autocomplete
+                id='colegio'
                 options={colegios}
-                getOptionLabel={(option) => option}
-                value={alumnoData.colegio}
-                onChange={(event, newValue) => {
-                  setAlumnoData({
-                    ...alumnoData,
-                    colegio: newValue || '',
-                  });
+                getOptionLabel={(option) => {
+                  return option.nome;
                 }}
+                value={colegioSeleccionado}
+                onChange={handleColegioChange}
                 disabled={mode === 'view'}
                 renderInput={(params) => (
                   <TextField

@@ -50,5 +50,12 @@ router.get('/alumnos/getRows', (req, res) => {
         res.json(results);
     });
 });
+router.get('/escolas/getRows', (req, res) => {
+    connection.query('SELECT * FROM `escolas`;', (error, results) => {
+        if (error) return res.status(500).json({ error: error.message });
+        res.json(results);
+    });
+});
+
 
 module.exports = router;
