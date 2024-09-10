@@ -50,8 +50,9 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
   useEffect(() => {
     if (alumno) {
       setAlumnoData(alumno);
-      const colegioEncontrado = colegios.find(c => c.nombre === alumno.colegio);
+      const colegioEncontrado = colegios.find(c => c.nome === alumno.colegio);
       setColegioSeleccionado(colegioEncontrado || null);
+      console.log('Colegio encontrado:', colegioEncontrado);
     }
   }, [alumno, colegios]);
 
@@ -77,9 +78,19 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+    // la edad no sea negativa
+    if (name === 'edad' && Number(value) < 0) {
+      setAlumnoData({
+        ...alumnoData,
+        [name]: '0',
+      });
+      return;
+    }  
     setAlumnoData({
       ...alumnoData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
@@ -102,7 +113,6 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
     try {
       let response;
       const token = user.token;
-      console.log('alumnoData:', alumnoData);
       if (mode === 'add') {
         response = await fetch('http://localhost:5000/alumnos', {
           method: 'POST',
@@ -231,6 +241,7 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
                 id='colegio'
                 options={colegios}
                 getOptionLabel={(option) => {
+                  console.log(option);
                   return option.nome;
                 }}
                 value={colegioSeleccionado}

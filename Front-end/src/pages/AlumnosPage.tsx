@@ -35,9 +35,7 @@ const AlumnosPage = () => {
 
   // Función para manejar cuando se guarda un alumno (en agregar o editar)
   const handleSaveAlumno = (nuevoAlumno: Alumno) => {
-    console.log('Alumno guardado:', nuevoAlumno);
     setOpenAgregarAlumno(false); // Cierra el modal después de guardar
-    // Aquí podrías actualizar tu lista de alumnos si estuviera guardada en un estado o backend
   };
 
 

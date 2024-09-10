@@ -1,24 +1,16 @@
-import React, { useState, useEffect,useRef  } from 'react';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import { TablePagination  } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { 
+  Box, Table, TableBody, TableCell, TableContainer, TableHead, 
+  TableRow, Toolbar, Typography, Paper, Checkbox, IconButton, 
+  TablePagination, Tooltip, Button, Dialog, DialogActions, DialogContent, 
+  DialogContentText, DialogTitle
+} from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import Tooltip from '@mui/material/Tooltip';
-import Button from '@mui/material/Button';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import AgregarAlumno from '../AgregarAlumno';
 
 interface Alumno {
   id: number;
@@ -27,24 +19,38 @@ interface Alumno {
   direccion: string;
   correo: string;
   colegio: string;
+  edad: number;
+  grado: string;
 }
-
 
 const headCells = [
   { id: 'nombre', label: 'Nombre' },
-  { id: 'telefono', label: 'Teléfono' },
-  { id: 'direccion', label: 'Dirección' },
+  { id: 'telefono', label: 'Telefono' },
+  { id: 'direccion', label: 'Direccion' },
   { id: 'correo', label: 'Correo' }, 
   { id: 'colegio', label: 'Colegio' },
   { id: 'actions', label: 'Opciones' },
-];;
+];
 
 const TableAlumnoPage: React.FC = () => {
   const [rows, setRows] = useState<Alumno[]>([]);
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [openModal, setOpenModal] = useState(false);
+  const [alumno, setAlumno] = useState<Alumno | null>(null);
+  const [mode, setMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [user, setUser] = useState({ username: 'guest', token: '' });
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedToDelete, setSelectedToDelete] = useState<readonly number[]>([]);
 
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);  
+  
   useEffect(() => {
     const fetchRows = async () => {
       try {
@@ -59,14 +65,58 @@ const TableAlumnoPage: React.FC = () => {
     fetchRows();
   }, []);
 
-  const handleChangePage = (newPage: number) => {
-    setPage(newPage);
+  const handleAlumnoAction = (id: number, actionMode: 'edit' | 'view') => {
+    const alumnoSeleccionado = rows.find((alumno) => alumno.id === id);
+    if (alumnoSeleccionado) {
+      setAlumno(alumnoSeleccionado);
+      setMode(actionMode);
+      setOpenModal(true);
+    }
+  };
+  
+  const handleOpenDeleteDialog = () => {
+    if (selected.length === 0) {
+      console.error('No hay alumnos seleccionados para eliminar');
+      return;
+    }
+    setSelectedToDelete(selected); // Guardar los alumnos seleccionados para eliminar
+    setOpenDeleteDialog(true);     // Abrir el di�logo
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+  const handleDelete = async () => {
+    if (!user.token || selectedToDelete.length === 0) {
+      console.error('No hay token de autenticación o no hay alumnos seleccionados');
+      return;
+    }
+  
+    try {
+      const response = await fetch('http://localhost:5000/alumnos', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids: selectedToDelete }), // Enviar los IDs como array en el cuerpo
+      });
+  
+      if (response.ok) {
+        console.log('Alumnos eliminados con éxito');
+        setRows((prevRows) => prevRows.filter((row) => !selectedToDelete.includes(row.id)));
+        setSelected([]);
+      } else {
+        console.error('Error al eliminar los alumnos');
+      }
+    } catch (error) {
+      console.error('Error en la petición:', error);
+    } finally {
+      setOpenDeleteDialog(false); // Cerrar el diálogo
+    }
   };
+  
+
+  const handleCloseModal = () => setOpenModal(false);
+  
+  const handleCloseDeleteDialog = () => setOpenDeleteDialog(false);
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -76,6 +126,7 @@ const TableAlumnoPage: React.FC = () => {
     }
     setSelected([]);
   };
+
   const handleClick = (id: number) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected: readonly number[] = [];
@@ -95,69 +146,44 @@ const TableAlumnoPage: React.FC = () => {
     setSelected(newSelected);
   };
 
-  const handleViewAlumno = (id: number) => {
-    console.log('Ver alumno', id);
-  };
-
-  const handleEditAlumno = (id: number) => {
-    console.log('Editar alumno', id);
-  };
-
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
-  interface EnhancedTableToolbarProps {
-    numSelected: number;
-  }
-  function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-    const { numSelected } = props;
-    return (
-      <Toolbar
-        sx={[
-          {
-            pl: { sm: 2 },
-            pr: { xs: 1, sm: 1 },
-          },
-          numSelected > 0 && {
-            bgcolor: (theme) =>
-              alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-          },
-        ]}
-      >
-        {numSelected > 0 ? (
-          <Typography
-            sx={{ flex: '1 1 100%' }}
-            color="inherit"
-            variant="subtitle1"
-            component="div"
-          >
-            {numSelected} selected
-          </Typography>
-        ) : (
-          <Typography
-            sx={{ flex: '1 1 100%' }}
-            variant="h6"
-            id="tableTitle"
-            component="div"
-          >
-            Alumnos
-          </Typography>
-        )}
-        {numSelected > 0 ? (
-          <Tooltip title="Delete">
-            <IconButton>
-              <DeleteIcon style={{ color: '#EA3C53' }} />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip title="Filter list">
-            <IconButton>
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
-        )}
-      </Toolbar>
-    );
-  }
+  const EnhancedTableToolbar: React.FC<{ numSelected: number }> = ({ numSelected }) => (
+    <Toolbar
+      sx={{
+        pl: { sm: 2 },
+        pr: { xs: 1, sm: 1 },
+        ...(numSelected > 0 && {
+          bgcolor: (theme) =>
+            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+        }),
+      }}
+    >
+      {numSelected > 0 ? (
+        <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
+          {numSelected} seleccionado(s)
+        </Typography>
+      ) : (
+        <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
+          Alumnos
+        </Typography>
+      )}
+      {numSelected > 0 ? (
+        <Tooltip title="Eliminar">
+          <IconButton onClick={handleOpenDeleteDialog}>
+            <DeleteIcon style={{ color: '#EA3C53' }} />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Tooltip title="Filtrar">
+          <IconButton>
+            <FilterListIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Toolbar>
+  );
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -171,10 +197,8 @@ const TableAlumnoPage: React.FC = () => {
                     color="primary"
                     indeterminate={selected.length > 0 && selected.length < rows.length}
                     checked={rows.length > 0 && selected.length === rows.length}
-                    onChange={(event) => handleSelectAllClick(event)}
-                    inputProps={{
-                      'aria-label': 'select all alumnos',
-                    }}
+                    onChange={handleSelectAllClick}
+                    inputProps={{ 'aria-label': 'select all alumnos' }}
                   />
                 </TableCell>
                 {headCells.map((headCell) => (
@@ -185,10 +209,9 @@ const TableAlumnoPage: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => {
+              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 const isItemSelected = isSelected(row.id);
                 const labelId = `enhanced-table-checkbox-${row.id}`;
-
                 return (
                   <TableRow
                     hover
@@ -203,9 +226,7 @@ const TableAlumnoPage: React.FC = () => {
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
+                        inputProps={{ 'aria-labelledby': labelId }}
                       />
                     </TableCell>
                     <TableCell>{row.nombre}</TableCell>
@@ -220,8 +241,8 @@ const TableAlumnoPage: React.FC = () => {
                         color="primary"
                         startIcon={<VisibilityIcon />}
                         onClick={(event) => {
-                          event.stopPropagation(); // Evita que el clic se propague a la fila
-                          handleViewAlumno(row.id);
+                          event.stopPropagation();
+                          handleAlumnoAction(row.id, 'view');
                         }}
                         size="small"
                       >
@@ -233,8 +254,8 @@ const TableAlumnoPage: React.FC = () => {
                         color="primary"
                         startIcon={<EditIcon />}
                         onClick={(event) => {
-                          event.stopPropagation(); // Evita que el clic se propague a la fila
-                          handleEditAlumno(row.id);
+                          event.stopPropagation();
+                          handleAlumnoAction(row.id, 'edit');
                         }}
                         size="small"
                       >
@@ -253,10 +274,34 @@ const TableAlumnoPage: React.FC = () => {
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+          }}
         />
       </Paper>
+      <AgregarAlumno 
+        open={openModal} 
+        onClose={handleCloseModal}
+        onSave={handleCloseModal} 
+        alumno={alumno} 
+        mode={mode} 
+      />
+      
+      {/* Dialogo de confirmacion de eliminacion */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Confirmar Eliminación</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Estás seguro de que deseas eliminar los alumnos seleccionados? Esta acción no se puede deshacer.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">Cancelar</Button>
+          <Button onClick={handleDelete} color="secondary">Eliminar</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

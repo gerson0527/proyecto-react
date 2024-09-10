@@ -45,7 +45,7 @@ router.get('/students/getNews', (req, res) => {
 
 
 router.get('/alumnos/getRows', (req, res) => {
-    connection.query('SELECT aln.id,aln.nome as nombre ,aln.telefone as telefono ,aln.email as correo,aln.endereco as direccion ,es.nome as colegio FROM `alunos` aln left join escolas es ON es.id = aln.escola_id order by aln.id DESC;', (error, results) => {
+    connection.query('SELECT aln.id,aln.nome as nombre ,aln.telefone as telefono,aln.gardo as grado,aln.edad as edad,aln.email as correo,aln.endereco as direccion ,es.nome as colegio FROM `alunos` aln left join escolas es ON es.id = aln.escola_id order by aln.id DESC', (error, results) => {
         if (error) return res.status(500).json({ error: error.message });
         res.json(results);
     });
