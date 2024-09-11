@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef  } from 'react';
 import { 
   Box, Table, TableBody, TableCell, TableContainer, TableHead, 
   TableRow, Toolbar, Typography, Paper, Checkbox, IconButton, 
@@ -9,7 +9,6 @@ import { alpha } from '@mui/material/styles';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import AgregarAlumno from '../AgregarAlumno';
 
 interface Alumno {
@@ -43,6 +42,8 @@ const TableAlumnoPage: React.FC = () => {
   const [user, setUser] = useState({ username: 'guest', token: '' });
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedToDelete, setSelectedToDelete] = useState<readonly number[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -50,7 +51,17 @@ const TableAlumnoPage: React.FC = () => {
       setUser(JSON.parse(userData));
     }
   }, []);  
-  
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  useEffect(() => {
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [searchQuery]);
+
   useEffect(() => {
     const fetchRows = async () => {
       try {
@@ -64,6 +75,19 @@ const TableAlumnoPage: React.FC = () => {
 
     fetchRows();
   }, []);
+
+  const filteredRows = rows.filter((row) => {
+    const query = searchQuery.toLowerCase();
+    console.log('query:', query);
+    return (
+      row.nombre.toLowerCase().includes(query) ||
+      row.telefono.includes(query) ||
+      row.direccion.toLowerCase().includes(query) ||
+      row.correo.toLowerCase().includes(query) ||
+      row.colegio.toLowerCase().includes(query)
+    );
+  });
+
 
   const handleAlumnoAction = (id: number, actionMode: 'edit' | 'view') => {
     const alumnoSeleccionado = rows.find((alumno) => alumno.id === id);
@@ -79,8 +103,8 @@ const TableAlumnoPage: React.FC = () => {
       console.error('No hay alumnos seleccionados para eliminar');
       return;
     }
-    setSelectedToDelete(selected); // Guardar los alumnos seleccionados para eliminar
-    setOpenDeleteDialog(true);     // Abrir el di�logo
+    setSelectedToDelete(selected); 
+    setOpenDeleteDialog(true);
   };
 
   const handleDelete = async () => {
@@ -96,7 +120,7 @@ const TableAlumnoPage: React.FC = () => {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ids: selectedToDelete }), // Enviar los IDs como array en el cuerpo
+        body: JSON.stringify({ ids: selectedToDelete }), 
       });
   
       if (response.ok) {
@@ -109,10 +133,9 @@ const TableAlumnoPage: React.FC = () => {
     } catch (error) {
       console.error('Error en la petición:', error);
     } finally {
-      setOpenDeleteDialog(false); // Cerrar el diálogo
+      setOpenDeleteDialog(false);
     }
   };
-  
 
   const handleCloseModal = () => setOpenModal(false);
   
@@ -120,11 +143,11 @@ const TableAlumnoPage: React.FC = () => {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((row) => row.id);
+      const newSelecteds = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => row.id);
       setSelected(newSelecteds);
-      return;
+    } else {
+      setSelected([]);
     }
-    setSelected([]);
   };
 
   const handleClick = (id: number) => {
@@ -147,9 +170,10 @@ const TableAlumnoPage: React.FC = () => {
   };
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
-
   const EnhancedTableToolbar: React.FC<{ numSelected: number }> = ({ numSelected }) => (
+    
     <Toolbar
+    
       sx={{
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
@@ -159,6 +183,7 @@ const TableAlumnoPage: React.FC = () => {
         }),
       }}
     >
+      
       {numSelected > 0 ? (
         <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
           {numSelected} seleccionado(s)
@@ -168,16 +193,30 @@ const TableAlumnoPage: React.FC = () => {
           Alumnos
         </Typography>
       )}
-      {numSelected > 0 ? (
+      {/* Campo de búsqueda */}
+      <input
+        type="search"
+        id="search-form"
+        placeholder="Buscar..."
+        value={searchQuery}
+        ref={searchInputRef}
+        onChange={handleSearchChange}
+        style={{
+          marginLeft: 'auto',
+          padding: '4px 6px',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          outline: 'none',
+          fontSize: '14px',
+          width: '200px',
+          transition: 'border-color 0.3s',
+        }}
+      />
+
+      {numSelected > 0 &&(
         <Tooltip title="Eliminar">
           <IconButton onClick={handleOpenDeleteDialog}>
             <DeleteIcon style={{ color: '#EA3C53' }} />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filtrar">
-          <IconButton>
-            <FilterListIcon />
           </IconButton>
         </Tooltip>
       )}
@@ -188,18 +227,18 @@ const TableAlumnoPage: React.FC = () => {
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer sx={{ maxHeight: 380, overflow: 'auto' }}>
+        <TableContainer sx={{ maxHeight: 373, overflow: 'auto' }}>
           <Table aria-labelledby="tableTitle" size="medium" stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
-                  <Checkbox
-                    color="primary"
-                    indeterminate={selected.length > 0 && selected.length < rows.length}
-                    checked={rows.length > 0 && selected.length === rows.length}
-                    onChange={handleSelectAllClick}
-                    inputProps={{ 'aria-label': 'select all alumnos' }}
-                  />
+                <Checkbox
+                  color="primary"
+                  indeterminate={selected.length > 0 && selected.length < filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).length}
+                  checked={filteredRows.length > 0 && selected.length === filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).length}
+                  onChange={handleSelectAllClick}
+                  inputProps={{ 'aria-label': 'select all alumnos' }}
+                />
                 </TableCell>
                 {headCells.map((headCell) => (
                   <TableCell key={headCell.id} align="left">
@@ -209,7 +248,7 @@ const TableAlumnoPage: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+              {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 const isItemSelected = isSelected(row.id);
                 const labelId = `enhanced-table-checkbox-${row.id}`;
                 return (
@@ -271,7 +310,7 @@ const TableAlumnoPage: React.FC = () => {
         <TablePagination
           rowsPerPageOptions={[5, 15, 25]}
           component="div"
-          count={rows.length}
+          count={filteredRows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={(_, newPage) => setPage(newPage)}
@@ -289,7 +328,6 @@ const TableAlumnoPage: React.FC = () => {
         mode={mode} 
       />
       
-      {/* Dialogo de confirmacion de eliminacion */}
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Confirmar Eliminación</DialogTitle>
         <DialogContent>

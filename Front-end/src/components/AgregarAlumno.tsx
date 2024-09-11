@@ -52,7 +52,6 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
       setAlumnoData(alumno);
       const colegioEncontrado = colegios.find(c => c.nome === alumno.colegio);
       setColegioSeleccionado(colegioEncontrado || null);
-      console.log('Colegio encontrado:', colegioEncontrado);
     }
   }, [alumno, colegios]);
 
@@ -79,8 +78,6 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
-    // la edad no sea negativa
     if (name === 'edad' && Number(value) < 0) {
       setAlumnoData({
         ...alumnoData,
@@ -102,17 +99,27 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
     });
   };
 
+  
   const handleSave = async () => {
     if (!user.token) {
-      console.error('No hay token de autenticación');
+      console.error('No hay token de autenticacion');
       return;
     }
     if( !alumnoData.nombre || !alumnoData.telefono || !alumnoData.direccion || !alumnoData.correo || !alumnoData.colegio || !alumnoData.edad || !alumnoData.grado) {
       alert('Por favor, rellene todos los campos');
     }
+    if(mode === 'edit'){
+      for(let i = 0; i < colegios.length; i++) {
+        if(colegioSeleccionado.nome === colegios[i].nome) {
+          // se debe de aguardar en alumno data el id del colegio
+          alumnoData.colegio = colegios[i].id;
+        }
+      }      
+    }
     try {
       let response;
       const token = user.token;
+      console.log('alumnoData:', alumnoData); 
       if (mode === 'add') {
         response = await fetch('http://localhost:5000/alumnos', {
           method: 'POST',
@@ -134,14 +141,14 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
       }
       if (response?.ok) {
         const data = await response.json();
-        console.log('Alumno guardado con éxito', data);
+        console.log('Alumno guardado con exito', data);
         onSave(alumnoData);
         onClose();
       } else {
         console.error('Error al guardar el alumno');
       }
     } catch (error) {
-      console.error('Error en la petición:', error);
+      console.error('Error en la peticion:', error);
     }
   };
 
@@ -159,7 +166,7 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
       >
         <DialogContent>
           <Grid container spacing={2}>
-            {/* Nombre y Teléfono */}
+            {/* Nombre y Telefono */}
             <Grid item xs={12} sm={6}>
               <TextField
                 name="nombre"
@@ -181,7 +188,7 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
             <Grid item xs={12} sm={6}>
               <TextField
                 name="telefono"
-                label="Teléfono"
+                label="TelÃ©fono"
                 value={alumnoData.telefono}
                 onChange={handleChange}
                 fullWidth
@@ -197,11 +204,11 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
               />
             </Grid>
 
-            {/* Dirección y Correo */}
+            {/* DirecciÃ³n y Correo */}
             <Grid item xs={12} sm={6}>
               <TextField
                 name="direccion"
-                label="Dirección"
+                label="DirecciÃ³n"
                 value={alumnoData.direccion}
                 onChange={handleChange}
                 fullWidth
@@ -241,7 +248,6 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
                 id='colegio'
                 options={colegios}
                 getOptionLabel={(option) => {
-                  console.log(option);
                   return option.nome;
                 }}
                 value={colegioSeleccionado}
@@ -310,9 +316,9 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="secondary">Cancelar</Button>
+          <Button onClick={onClose} color="secondary" style={{color:'rgb(234, 60, 83)', borderColor:'rgb(234, 60, 83)', outline:'none', border:'1px solid'}}>Cancelar</Button>
           {mode !== 'view' && (
-            <Button type="submit" color="primary">
+            <Button type="submit"  style={{color:'rgb(234, 60, 83)', borderColor:'rgb(234, 60, 83)', outline:'none', border:'1px solid'}}>
               {mode === 'add' ? 'Agregar' : 'Guardar'}
             </Button>
           )}

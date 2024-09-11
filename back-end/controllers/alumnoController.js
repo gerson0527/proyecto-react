@@ -53,7 +53,7 @@ const addAlumno = (req, res) => {
       return res.status(400).json({ error: 'All fields are required' });
     }
   
-    const query = 'UPDATE alumnos SET nombre = ?, telefono = ?, direccion = ?, correo = ?, colegio = ?, edad = ?, gardo = ? WHERE id = ?';
+    const query = 'UPDATE alunos SET nome = ?, telefone = ?, endereco = ?, email = ?, escola_id = ?, edad = ?, gardo = ? WHERE id = ?';
   
     connection.query(query, [ nombre, telefono, direccion, correo, colegio, edad, grado, id], (err, results) => {
       if (err) {

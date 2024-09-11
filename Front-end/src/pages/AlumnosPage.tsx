@@ -40,12 +40,12 @@ const AlumnosPage = () => {
 
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: '100vh'}}>
       <Sidebar />
       <div style={{ flexGrow: 1 }}>
         <Navbar />
         <div style={{ marginTop: '20px', padding: '20px' }}>
-          <h1>Panel Alumnos</h1>
+          <h1 style={{fontSize:'15px',}}>Panel Alumnos</h1>
           <Button style={{marginTop :'30px'}}
             variant="contained"
             startIcon={<AddIcon />}
@@ -63,8 +63,9 @@ const AlumnosPage = () => {
               alumno={alumno} // Alumno actual si es para editar o visualizar
               mode={mode} // Modo del modal: agregar, editar o ver
             />
-            <TableAlumnoPage
-            />
+            <div style={{height:'100px'}}>
+              <TableAlumnoPage/>
+            </div>
           </div>
         </div>
       </div>
