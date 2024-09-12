@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext  } from 'react';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Autocomplete, Grid, InputAdornment } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -6,6 +6,8 @@ import HomeIcon from '@mui/icons-material/Home';
 import EmailIcon from '@mui/icons-material/Email';
 import SchoolIcon from '@mui/icons-material/School';
 import CakeIcon from '@mui/icons-material/Cake';
+import AuthContext from '../components/AuthContext/AuthContext';  // Importa el AuthContext
+
 
 interface Alumno {
   id?: number;
@@ -46,6 +48,8 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
   const [user, setUser] = useState({ username: 'guest', token: '' });
   const [colegios, setColegios] = useState<Colegio[]>([]);
   const [colegioSeleccionado, setColegioSeleccionado] = useState<Colegio | null>(null);
+  const { fetchWithToken } = useContext(AuthContext); // Accede al fetchWithToken desde el contexto
+
 
   useEffect(() => {
     if (alumno) {
@@ -119,9 +123,8 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
     try {
       let response;
       const token = user.token;
-      console.log('alumnoData:', alumnoData); 
       if (mode === 'add') {
-        response = await fetch('http://localhost:5000/alumnos', {
+        response = await fetchWithToken('http://localhost:5000/alumnos', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -130,7 +133,7 @@ const AgregarAlumno: React.FC<AgregarAlumnoProps> = ({ open, onClose, onSave, al
           body: JSON.stringify(alumnoData),
         });
       } else if (mode === 'edit' && alumno?.id) {
-        response = await fetch(`http://localhost:5000/alumnos/${alumno.id}`, {
+        response = await fetchWithToken(`http://localhost:5000/alumnos/${alumno.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

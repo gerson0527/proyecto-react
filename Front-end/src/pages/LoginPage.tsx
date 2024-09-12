@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'; // Para redirección
 import Alert from '../components/Alert';
 import bagimg from '../assets/cool-background.png';
 import { TextField, Button, Container, Typography, Box, InputAdornment } from '@mui/material';
-import { AccountCircle, Lock } from '@mui/icons-material';
+import { AccountCircle, Lock, Token } from '@mui/icons-material';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -23,9 +23,8 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
       const data = await response.json();
-
       if (response.ok) {
-        const user = { username, token: data.token };
+        const user = { username, token__refresh: data.token__resfresh, token: data.token };
         localStorage.setItem('user', JSON.stringify(user));
         setAlert({ type: 'success', message: data.message, variant: 'filled' });
         setTimeout(() => {

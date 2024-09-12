@@ -25,7 +25,8 @@ exports.login = (req, res) => {
       }
       const payload = { id: user.id, username: user.username, email: user.email }
       const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-      return res.status(200).send({ message: 'Login successful', token });
+      const token__resfresh = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '12h' });
+      return res.status(200).send({ message: 'Login successful', token, token__resfresh });
     } else {
       return res.status(401).send({ message: 'Invalid username or password' });
     }

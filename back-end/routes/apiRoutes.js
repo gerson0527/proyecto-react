@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../config/db'); // Aseg�rate de tener una conexi�n a tu base de datos aqu�
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 router.get('/students', (req, res) => {
     connection.query('SELECT COUNT(*) AS total FROM alunos', (error, results) => {
@@ -56,6 +58,24 @@ router.get('/escolas/getRows', (req, res) => {
         res.json(results);
     });
 });
+router.post('/token', (req, res) => {
+    const { token__refresh } = req.body;
 
+    if (!token__refresh) return res.sendStatus(401);
+  
+    jwt.verify(token__refresh, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        if (err) {
+            return res.sendStatus(403);
+        }
+  
+      const accessToken = generateAccessToken({ id: user.id });
+      res.json({ accessToken });
+    });
+}); 
 
+const generateAccessToken = (user) => {
+  return jwt.sign(user, process.env.JWT_SECRET, {
+    expiresIn: '1h', // 1h hora
+  })
+};
 module.exports = router;

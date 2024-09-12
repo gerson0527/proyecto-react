@@ -13,7 +13,7 @@ router.post('/alumnos', authenticateToken, alumnoController.addAlumno);
 // Editar un alumno por ID (protegido)
 router.put('/alumnos/:id', authenticateToken, alumnoController.editAlumno);
 // Eliminar un alumno por ID (protegido)
-router.delete('/alumnos', authenticateToken, alumnoController.deleteAlumnos);
+router.delete('/alumnoseli', authenticateToken, alumnoController.deleteAlumnos);
 
 
 

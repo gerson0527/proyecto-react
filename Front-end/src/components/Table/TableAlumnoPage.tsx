@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef  } from 'react';
+import React, { useState, useEffect, useRef, useContext  } from 'react';
 import { 
   Box, Table, TableBody, TableCell, TableContainer, TableHead, 
   TableRow, Toolbar, Typography, Paper, Checkbox, IconButton, 
@@ -10,6 +10,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AgregarAlumno from '../AgregarAlumno';
+import AuthContext from '../AuthContext/AuthContext';  // Importa el AuthContext
+
 
 interface Alumno {
   id: number;
@@ -44,6 +46,8 @@ const TableAlumnoPage: React.FC = () => {
   const [selectedToDelete, setSelectedToDelete] = useState<readonly number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const { fetchWithToken } = useContext(AuthContext); // Accede al fetchWithToken desde el contexto
+
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -78,7 +82,6 @@ const TableAlumnoPage: React.FC = () => {
 
   const filteredRows = rows.filter((row) => {
     const query = searchQuery.toLowerCase();
-    console.log('query:', query);
     return (
       row.nombre.toLowerCase().includes(query) ||
       row.telefono.includes(query) ||
@@ -109,12 +112,12 @@ const TableAlumnoPage: React.FC = () => {
 
   const handleDelete = async () => {
     if (!user.token || selectedToDelete.length === 0) {
-      console.error('No hay token de autenticación o no hay alumnos seleccionados');
+      console.error('No hay token de autenticaciÃ³n o no hay alumnos seleccionados');
       return;
     }
   
     try {
-      const response = await fetch('http://localhost:5000/alumnos', {
+      const response = await fetchWithToken('http://localhost:5000/alumnoseli', {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -124,14 +127,14 @@ const TableAlumnoPage: React.FC = () => {
       });
   
       if (response.ok) {
-        console.log('Alumnos eliminados con éxito');
+        console.log('Alumnos eliminados con Ã©xito');
         setRows((prevRows) => prevRows.filter((row) => !selectedToDelete.includes(row.id)));
         setSelected([]);
       } else {
         console.error('Error al eliminar los alumnos');
       }
     } catch (error) {
-      console.error('Error en la petición:', error);
+      console.error('Error en la peticiÃ³n:', error);
     } finally {
       setOpenDeleteDialog(false);
     }
@@ -193,7 +196,7 @@ const TableAlumnoPage: React.FC = () => {
           Alumnos
         </Typography>
       )}
-      {/* Campo de búsqueda */}
+      {/* Campo de bÃºsqueda */}
       <input
         type="search"
         id="search-form"
@@ -329,10 +332,10 @@ const TableAlumnoPage: React.FC = () => {
       />
       
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
+        <DialogTitle>Confirmar EliminaciÃ³n</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            ¿Estás seguro de que deseas eliminar los alumnos seleccionados? Esta acción no se puede deshacer.
+            Â¿EstÃ¡s seguro de que deseas eliminar los alumnos seleccionados? Esta acciÃ³n no se puede deshacer.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

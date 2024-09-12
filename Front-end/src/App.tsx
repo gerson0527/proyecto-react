@@ -1,12 +1,10 @@
 // src/App.tsx
 import AppRoutes from './routes/Routes';
 
-function App() {
+const App = () => {
   return (
-    <div>
       <AppRoutes />
-    </div>
   );
-}
+};
 
 export default App;

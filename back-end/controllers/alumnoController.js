@@ -3,13 +3,13 @@ const connection = require('../config/db');
 
 const addAlumno = (req, res) => {
     const { nombre, telefono, direccion, correo, colegio, edad, grado } = req.body;
-    if (!nombre || !telefono || !direccion || !correo || !colegio) {
+    if (!nombre || !telefono || !direccion || !correo || !colegio || !grado || !edad) {
       console.log('All fields are required');
       return res.status(400).json({ error: 'All fields are required' });
     }
-  
-    const query = 'INSERT INTO alunos (nome, email, endereco, telefone, edad, grado, escola_id) VALUES (?, ?, ?, ?, ?)';
-    connection.query(query, [nombre, correo,direccion,telefono, edad, grado, colegio], (err, results) => {
+    console.log('Adding new data:', nombre, telefono, direccion, correo, colegio, edad, grado);
+    const query = 'INSERT INTO alunos (nome, email, endereco, telefone, edad, gardo, escola_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    connection.query(query, [nombre, correo, direccion, telefono, edad, grado, colegio], (err, results) => {
       console.log(err);
       if (err) {
         console.error('Error adding data:', err);
